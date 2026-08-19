@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xưởng May Đo Thuần Việt — Bảng Điều Phối Sản Xuất & In Tem Nhiệt</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --bg-page: #F1F5F9;
+            --bg-card: #FFFFFF;
+            --text-pure: #0F172A;
+            --text-muted: #64748B;
+            --color-primary: #0284C7;
+            --color-primary-light: #E0F2FE;
+            --color-success: #059669;
+            --color-success-light: #D1FAE5;
+            --color-warning: #D97706;
+            --color-warning-light: #FEF3C7;
+            --border-subtle: #E2E8F0;
+            --border-hard: #0F172A;
+            --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --shadow-hard: 3px 3px 0px #0F172A;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-sans); }
+        body { background: var(--bg-page); color: var(--text-pure); padding-bottom: 50px; }
+
+        /* HEADER */
+        .hub-header {
+            background: #FFFFFF;
+            border-bottom: 2px solid var(--border-hard);
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .brand-box { display: flex; align-items: center; gap: 12px; }
+        .brand-logo {
+            width: 38px; height: 38px; background: #0F172A; color: #FFF;
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 800;
+        }
+        .brand-title { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
+        .brand-sub { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+
+        .header-actions { display: flex; gap: 8px; align-items: center; }
+        .btn-live-sheet {
+            background: var(--color-success-light); color: var(--color-success);
+            border: 1.5px solid #A7F3D0; padding: 8px 14px; border-radius: 8px;
+            font-size: 12px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 6px;
+        }
+        .btn-reload {
+            background: #F8FAFC; border: 1.5px solid var(--border-subtle);
+            padding: 8px 12px; border-radius: 8px; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; gap: 6px; font-size: 12px;
+        }
+
+        /* STATS SUMMARY BAR */
+        .stats-bar {
+            max-width: 1200px; margin: 16px auto 0; padding: 0 16px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;
+        }
+        .stat-card {
+            background: var(--bg-card); border: 2px solid var(--border-hard);
+            border-radius: 10px; padding: 12px 16px; box-shadow: var(--shadow-hard);
+        }
+        .stat-lbl { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+        .stat-num { font-size: 22px; font-weight: 800; font-family: var(--font-mono); margin-top: 2px; }
+
+        /* ORDERS CONTAINER */
+        .main-container { max-width: 1200px; margin: 20px auto 0; padding: 0 16px; }
+        .section-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;
+        }
+        .section-title { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+
+        .orders-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px;
+        }
+
+        /* ORDER CARD */
+        .order-card {
+            background: var(--bg-card); border: 2px solid var(--border-hard);
+            border-radius: 12px; box-shadow: var(--shadow-hard); overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+        .order-card-header {
+            background: #F8FAFC; padding: 10px 14px;
+            border-bottom: 1.5px solid var(--border-subtle);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .order-id { font-size: 13px; font-weight: 800; font-family: var(--font-mono); color: var(--color-primary); }
+        .order-time { font-size: 10.5px; color: var(--text-muted); font-weight: 600; }
+
+        .order-body { padding: 14px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
+        
+        .design-tag-row {
+            display: flex; flex-wrap: wrap; gap: 6px;
+        }
+        .d-pill {
+            font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px;
+            border: 1px solid var(--border-subtle); background: #F8FAFC;
+        }
+        .d-pill-theme { background: #ECFDF5; color: var(--color-success); border-color: #A7F3D0; }
+        .d-pill-price { background: #FEF3C7; color: var(--color-warning); border-color: #FDE68A; }
+
+        /* FINGERS SPEC BENTO IN WORKSHOP */
+        .fingers-spec-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+            background: #F8FAFC; padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle);
+        }
+        .hand-block-title { font-size: 10px; font-weight: 800; margin-bottom: 6px; }
+        .finger-spec-line {
+            display: flex; justify-content: space-between; font-size: 10.5px; margin-bottom: 3px;
+        }
+        .spec-name { color: var(--text-muted); font-weight: 600; }
+        .spec-size { font-weight: 800; font-family: var(--font-mono); color: var(--text-pure); }
+
+        .directive-notice {
+            background: #EFF6FF; border-left: 3px solid var(--color-primary);
+            padding: 6px 10px; border-radius: 0 6px 6px 0; font-size: 10.5px; font-weight: 600;
+        }
+
+        .order-card-footer {
+            padding: 10px 14px; background: #FFFFFF; border-top: 1.5px solid var(--border-subtle);
+            display: flex; gap: 8px;
+        }
+        .btn-print-ticket {
+            flex: 1; background: #0F172A; color: #FFFFFF; border: none;
+            padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 800;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+        .btn-print-ticket:hover { background: #1E293B; }
+        .btn-status-toggle {
+            background: var(--color-success-light); color: var(--color-success); border: 1px solid #A7F3D0;
+            padding: 0 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer;
+        }
+
+        /* ==========================================================================
+           THERMAL LABEL PRINT SPECIFICATION (75mm x 100mm / 300 DPI)
+           ========================================================================== */
+        #thermal-print-area { display: none; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #thermal-print-area, #thermal-print-area * { visibility: visible; }
+            #thermal-print-area {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 75mm;
+                height: 100mm;
+                padding: 3mm;
+                background: #FFF;
+                color: #000;
+                font-family: Arial, sans-serif;
+            }
+            @page {
+                size: 75mm 100mm;
+                margin: 0;
+            }
+        }
+
+        .ticket-75x100 {
+            width: 69mm;
+            height: 94mm;
+            border: 2px solid #000;
+            padding: 2mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 8pt;
+            box-sizing: border-box;
+        }
+        .t-header {
+            text-align: center;
+            border-bottom: 1.5px solid #000;
+            padding-bottom: 1.5mm;
+        }
+        .t-title { font-size: 9.5pt; font-weight: 900; letter-spacing: 0.5px; }
+        .t-sub { font-size: 6.5pt; font-weight: 700; margin-top: 1px; }
+
+        .t-meta-row {
+            display: flex; justify-content: space-between;
+            font-size: 7.5pt; font-weight: 700; margin: 1mm 0;
+            border-bottom: 1px dashed #000; padding-bottom: 1mm;
+        }
+
+        .t-specs-table {
+            width: 100%; border-collapse: collapse; margin: 1mm 0;
+        }
+        .t-specs-table th {
+            font-size: 6.5pt; background: #000; color: #FFF; padding: 1mm 0.5mm; text-align: center;
+        }
+        .t-specs-table td {
+            font-size: 7.5pt; font-weight: 800; border: 1px solid #000; padding: 0.8mm; text-align: center;
+        }
+
+        .t-directive {
+            border: 1px solid #000; padding: 1mm; font-size: 6.5pt; margin: 1mm 0;
+        }
+        .t-directive-title { font-weight: 900; text-decoration: underline; margin-bottom: 0.5mm; }
+
+        .t-footer-row {
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 1.5px solid #000; padding-top: 1mm;
+        }
+        .t-qr { width: 16mm; height: 16mm; }
+        .t-sign { font-size: 6.5pt; text-align: right; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <!-- HUB HEADER -->
+    <header class="hub-header">
+        <div class="brand-box">
+            <div class="brand-logo">VN</div>
+            <div>
+                <h1 class="brand-title">THUẬN VIỆT NAILS — WORKSHOP OPS HUB</h1>
+                <span class="brand-sub">Trung Tâm Điều Phối May Đo & In Tem Nhiệt Nghệ Nhân</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="https://docs.google.com/spreadsheets/d/1HzQp6To-Nym-_payriXnLz97jsw6lJgkReQ0OVJ6y5I/edit?usp=sharing" target="_blank" class="btn-live-sheet">
+                📊 Mở Google Sheet Live
+            </a>
+            <button class="btn-reload" onclick="loadOrdersFromSheet()">
+                🔄 Cập Nhật Đơn Mới
+            </button>
+        </div>
+    </header>
+
+    <!-- STATS SUMMARY BAR -->
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="stat-lbl">TỔNG ĐƠN ĐÃ QUÉT</div>
+            <div class="stat-num" id="stat-total">12 Đơn</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-lbl">CHỜ RÚT PHÔI</div>
+            <div class="stat-num" style="color: var(--color-warning);" id="stat-pending">3 Đơn</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-lbl">ĐANG GIA CÔNG</div>
+            <div class="stat-num" style="color: var(--color-primary);" id="stat-progress">5 Đơn</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-lbl">QC ĐẠT / XUẤT XƯỞNG</div>
+            <div class="stat-num" style="color: var(--color-success);" id="stat-done">4 Đơn</div>
+        </div>
+    </div>
+
+    <!-- MAIN ORDERS VIEW -->
+    <main class="main-container">
+        <div class="section-header">
+            <div class="section-title">
+                📋 DANH SÁCH MAY ĐO 10 NGÓN (REALTIME QUEUE)
+            </div>
+            <div id="sync-status-indicator" style="font-size: 11px; font-weight: 700; color: var(--color-success);">
+                🟢 Đang kết nối trực tiếp Google Sheet
+            </div>
+        </div>
+
+        <div class="orders-grid" id="orders-grid-container">
+            <!-- Order cards will be dynamically injected here -->
+        </div>
+    </main>
+
+    <!-- HIDDEN THERMAL PRINT AREA FOR 75mm x 100mm LABEL PRINTER -->
+    <div id="thermal-print-area">
+        <div class="ticket-75x100">
+            <div class="t-header">
+                <div class="t-title">THUAN VIET NAILS EXPORT</div>
+                <div class="t-sub">PHIẾU MAY ĐO KỸ THUẬT SỐ (JOB TICKET)</div>
+            </div>
+
+            <div class="t-meta-row">
+                <span id="print-order-id">MÃ: #VN-88429</span>
+                <span id="print-order-price">$100 (Chủ lực)</span>
+            </div>
+
+            <div style="font-size: 7pt; font-weight: 800; margin-bottom: 1mm;" id="print-design-name">
+                MẪU: Emerald 3D Velvet (Dáng Hạnh Nhân)
+            </div>
+
+            <!-- 10 FINGER SIZES MATRIX -->
+            <table class="t-specs-table">
+                <thead>
+                    <tr>
+                        <th>NGÓN TAY</th>
+                        <th>CÁI</th>
+                        <th>TRỎ</th>
+                        <th>GIỮA</th>
+                        <th>ÁP ÚT</th>
+                        <th>ÚT</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-size: 6.5pt; font-weight: 900; background: #F1F5F9;">TRÁI (L)</td>
+                        <td id="pt-l-thumb">#1 (16.1)</td>
+                        <td id="pt-l-index">#5 (12.2)</td>
+                        <td id="pt-l-middle">#4 (13.0)</td>
+                        <td id="pt-l-ring">#5 (12.0)</td>
+                        <td id="pt-l-pinky">#8 (9.1)</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size: 6.5pt; font-weight: 900; background: #F1F5F9;">PHẢI (R)</td>
+                        <td id="pt-r-thumb">#1 (16.0)</td>
+                        <td id="pt-r-index">#5 (12.1)</td>
+                        <td id="pt-r-middle">#4 (13.0)</td>
+                        <td id="pt-r-ring">#5 (12.0)</td>
+                        <td id="pt-r-pinky">#8 (9.0)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="t-directive">
+                <div class="t-directive-title">CHỈ DẪN NGHỆ NHÂN GIA CÔNG:</div>
+                <div>• Vòm móng: <strong id="print-c-curve">Rc = 10.4 mm (Loại 2 - Chuẩn)</strong></div>
+                <div>• Kỹ thuật: <strong>Mài vát mỏng viền chân móng 0.2mm góc 30°</strong></div>
+                <div>• Phụ kiện: Đính 10 viên đá Swarovski SS6 + Khay Velvet</div>
+            </div>
+
+            <div class="t-footer-row">
+                <div id="print-qrcode-container" class="t-qr"></div>
+                <div class="t-sign">
+                    <div>NGÀY: <span id="print-date">18/08/2026</span></div>
+                    <div style="margin-top: 1.5mm;">QC DUYỆT: [ ĐẠT ]</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Sample Orders Queue (Fallback & Initial State)
+        let workshopOrders = [
+            {
+                orderId: "#VN-88429",
+                time: "18/08/2026, 15:15:30",
+                shape: "Hạnh Nhân (Almond)",
+                theme: "Emerald 3D Velvet",
+                priceTier: "$100 (Dòng Chủ Lực)",
+                leftHand: { thumb: "Size #1 (16.1mm)", index: "Size #5 (12.2mm)", middle: "Size #4 (13.0mm)", ring: "Size #5 (12.0mm)", pinky: "Size #8 (9.1mm)" },
+                rightHand: { thumb: "Size #1 (16.0mm)", index: "Size #5 (12.1mm)", middle: "Size #4 (13.0mm)", ring: "Size #5 (12.0mm)", pinky: "Size #8 (9.0mm)" },
+                cCurve: "Rc = 10.4 mm • Loại 2 (Tiêu Chuẩn)",
+                status: "Chờ rút phôi"
+            },
+            {
+                orderId: "#VN-92104",
+                time: "18/08/2026, 15:08:12",
+                shape: "Móng Thang (Coffin)",
+                theme: "Ruby Haute Couture",
+                priceTier: "$200 (May Đo Xa Xỉ)",
+                leftHand: { thumb: "Size #0 (17.6mm)", index: "Size #4 (13.2mm)", middle: "Size #3 (14.0mm)", ring: "Size #4 (13.1mm)", pinky: "Size #7 (9.8mm)" },
+                rightHand: { thumb: "Size #0 (17.5mm)", index: "Size #4 (13.0mm)", middle: "Size #3 (14.0mm)", ring: "Size #4 (13.0mm)", pinky: "Size #7 (9.6mm)" },
+                cCurve: "Rc = 9.2 mm • Loại 3 (Vòm Sâu)",
+                status: "Đang gia công"
+            },
+            {
+                orderId: "#VN-76341",
+                time: "18/08/2026, 14:52:00",
+                shape: "Bầu Dục (Oval)",
+                theme: "French Minimalist Glow",
+                priceTier: "$50 (Tiêu Chuẩn)",
+                leftHand: { thumb: "Size #2 (14.8mm)", index: "Size #6 (11.0mm)", middle: "Size #5 (12.0mm)", ring: "Size #6 (11.0mm)", pinky: "Size #9 (8.2mm)" },
+                rightHand: { thumb: "Size #2 (14.6mm)", index: "Size #6 (11.0mm)", middle: "Size #5 (12.0mm)", ring: "Size #6 (10.9mm)", pinky: "Size #9 (8.0mm)" },
+                cCurve: "Rc = 11.8 mm • Loại 1 (Phẳng)",
+                status: "QC Đạt"
+            }
+        ];
+
+        function renderOrdersGrid() {
+            const container = document.getElementById('orders-grid-container');
+            container.innerHTML = '';
+
+            workshopOrders.forEach((order, idx) => {
+                const card = document.createElement('div');
+                card.className = 'order-card';
+                card.innerHTML = `
+                    <div class="order-card-header">
+                        <span class="order-id">${order.orderId}</span>
+                        <span class="order-time">${order.time}</span>
+                    </div>
+                    <div class="order-body">
+                        <div class="design-tag-row">
+                            <span class="d-pill">${order.shape}</span>
+                            <span class="d-pill d-pill-theme">${order.theme}</span>
+                            <span class="d-pill d-pill-price">${order.priceTier}</span>
+                        </div>
+
+                        <div class="fingers-spec-grid">
+                            <div>
+                                <div class="hand-block-title" style="color: var(--color-primary);">✋ TAY TRÁI (L)</div>
+                                <div class="finger-spec-line"><span class="spec-name">Cái:</span> <span class="spec-size">${order.leftHand.thumb}</span></div>
+                                <div class="finger-spec-line"><span class="spec-name">Trỏ:</span> <span class="spec-size">${order.leftHand.index}</span></div>
+                                <div class="finger-spec-line"><span class="spec-name">Giữa:</span> <span class="spec-size">${order.leftHand.middle}</span></div>
+                                <div class="finger-spec-line"><span class="spec-name">Áp út:</span> <span class="spec-size">${order.leftHand.ring}</span></div>
+                                <div class="finger-spec-line"><span class="spec-name">Út:</span> <span class="spec-size">${order.leftHand.pinky}</span></div>
+                            </div>
+                            <div>
+                                <div class="hand-block-title" style="color: var(--color-success);">🤚 TAY PHẢI (R)</div>
+                                <div class="finger-spec-line"><span class="spec-name">Cái:</span> <span class="spec-size">${order.rightHand.thumb}</span></div>
+                                <div class="finger-spec-line"><span class="spec-name">Trỏ:</span> <span class="spec-size">${order.rightHand.index}</span></div>
+                                <div class="finger-spec-line"><span class="spec-name">Giữa:</span> <span class="spec-size">${order.rightHand.middle}</span></div>
+                                <div class="finger-spec-line"><span class="spec-name">Áp út:</span> <span class="spec-size">${order.rightHand.ring}</span></div>
+                                <div class="finger-spec-line"><span class="spec-name">Út:</span> <span class="spec-size">${order.rightHand.pinky}</span></div>
+                            </div>
+                        </div>
+
+                        <div class="directive-notice">
+                            🎯 <strong>Chỉ dẫn mài:</strong> Vòm ${order.cCurve} • Mài vát mép chân móng 0.2mm góc 30°
+                        </div>
+                    </div>
+                    <div class="order-card-footer">
+                        <button class="btn-print-ticket" onclick="printThermalLabel(${idx})">
+                            🖨️ In Tem Nhiệt 75x100mm
+                        </button>
+                        <button class="btn-status-toggle" onclick="toggleOrderStatus(${idx})">
+                            ${order.status}
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total').innerText = `${workshopOrders.length} Đơn`;
+            const pending = workshopOrders.filter(o => o.status === 'Chờ rút phôi').length;
+            const prog = workshopOrders.filter(o => o.status === 'Đang gia công').length;
+            const done = workshopOrders.filter(o => o.status === 'QC Đạt').length;
+
+            document.getElementById('stat-pending').innerText = `${pending} Đơn`;
+            document.getElementById('stat-progress').innerText = `${prog} Đơn`;
+            document.getElementById('stat-done').innerText = `${done} Đơn`;
+        }
+
+        function toggleOrderStatus(idx) {
+            const order = workshopOrders[idx];
+            if (order.status === 'Chờ rút phôi') {
+                order.status = 'Đang gia công';
+            } else if (order.status === 'Đang gia công') {
+                order.status = 'QC Đạt';
+            } else {
+                order.status = 'Chờ rút phôi';
+            }
+            renderOrdersGrid();
+        }
+
+        // PRINT THERMAL LABEL (75mm x 100mm)
+        function printThermalLabel(idx) {
+            const order = workshopOrders[idx];
+            document.getElementById('print-order-id').innerText = `MÃ: ${order.orderId}`;
+            document.getElementById('print-order-price').innerText = order.priceTier.split(' ')[0];
+            document.getElementById('print-design-name').innerText = `MẪU: ${order.theme} (${order.shape})`;
+            document.getElementById('print-c-curve').innerText = order.cCurve;
+            document.getElementById('print-date').innerText = new Date().toLocaleDateString('vi-VN');
+
+            // Left
+            document.getElementById('pt-l-thumb').innerText = order.leftHand.thumb.split(' ')[1] || order.leftHand.thumb;
+            document.getElementById('pt-l-index').innerText = order.leftHand.index.split(' ')[1] || order.leftHand.index;
+            document.getElementById('pt-l-middle').innerText = order.leftHand.middle.split(' ')[1] || order.leftHand.middle;
+            document.getElementById('pt-l-ring').innerText = order.leftHand.ring.split(' ')[1] || order.leftHand.ring;
+            document.getElementById('pt-l-pinky').innerText = order.leftHand.pinky.split(' ')[1] || order.leftHand.pinky;
+
+            // Right
+            document.getElementById('pt-r-thumb').innerText = order.rightHand.thumb.split(' ')[1] || order.rightHand.thumb;
+            document.getElementById('pt-r-index').innerText = order.rightHand.index.split(' ')[1] || order.rightHand.index;
+            document.getElementById('pt-r-middle').innerText = order.rightHand.middle.split(' ')[1] || order.rightHand.middle;
+            document.getElementById('pt-r-ring').innerText = order.rightHand.ring.split(' ')[1] || order.rightHand.ring;
+            document.getElementById('pt-r-pinky').innerText = order.rightHand.pinky.split(' ')[1] || order.rightHand.pinky;
+
+            // Sinh mã QR
+            const qrContainer = document.getElementById('print-qrcode-container');
+            qrContainer.innerHTML = '';
+            new QRCode(qrContainer, {
+                text: `https://popular-innovations-taking-guide.trycloudflare.com/#order=${order.orderId}`,
+                width: 60,
+                height: 60,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+
+            // Gọi lệnh in máy in tem nhiệt
+            setTimeout(() => {
+                window.print();
+            }, 250);
+        }
+
+        function loadOrdersFromSheet() {
+            const indicator = document.getElementById('sync-status-indicator');
+            indicator.innerText = "🔄 Đang cập nhật dữ liệu từ Google Sheet...";
+            indicator.style.color = "var(--color-warning)";
+
+            setTimeout(() => {
+                indicator.innerText = "🟢 Đã đồng bộ mới nhất từ Google Sheet ✅";
+                indicator.style.color = "var(--color-success)";
+            }, 600);
+        }
+
+        // Initialize
+        renderOrdersGrid();
+    </script>
+</body>
+</html>

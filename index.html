@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Thuần Việt 3D Nail Studio — Quét 10 Ngón Bàn Tay (Light Mode)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- OpenCV.js -->
+    <script async src="https://docs.opencv.org/4.8.0/opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
+</head>
+<body class="light-theme">
+
+    <div class="app-container">
+        <!-- HEADER (LIGHT THEME) -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-badge">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="brand-title">THUẦN VIỆT 3D STUDIO</h1>
+                    <span class="brand-sub">Đo Móng 3D Chuẩn Xác • Giao Diện Sáng Rõ</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <!-- VOICE ASSISTANT BUTTON -->
+                <button id="voice-toggle-btn" class="btn-voice-pill active" title="Bật/Tắt Giọng Nói Hướng Dẫn">
+                    <span class="sound-wave-bars">
+                        <span></span><span></span><span></span>
+                    </span>
+                    <span class="btn-voice-text">Giọng Nói AI</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- 4-STEP SCAN PROGRESSION STEPPER (HƯỚNG DẪN 4 BƯỚC ĐỦ 10 NGÓN) -->
+        <div class="stepper-section">
+            <div class="stepper-header">
+                <span class="stepper-title" id="current-step-title">BƯỚC 1/4: QUÉT 4 NGÓN TAY TRÁI</span>
+                <span class="fingers-counter" id="fingers-measured-tag">Đã đo: 0/10 ngón</span>
+            </div>
+            <div class="stepper-track">
+                <div class="step-pill active" id="step-btn-1" data-step="1">
+                    <span class="step-badge">1</span>
+                    <span class="step-text">Trái: 4 Ngón</span>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step-pill" id="step-btn-2" data-step="2">
+                    <span class="step-badge">2</span>
+                    <span class="step-text">Trái: Ngón Cái</span>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step-pill" id="step-btn-3" data-step="3">
+                    <span class="step-badge">3</span>
+                    <span class="step-text">Phải: 4 Ngón</span>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step-pill" id="step-btn-4" data-step="4">
+                    <span class="step-badge">4</span>
+                    <span class="step-text">Phải: Ngón Cái</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SENSOR STATUS HUD -->
+        <div class="sensor-bar">
+            <div id="gyro-pill" class="status-pill status-warning">
+                <span class="pulse-dot"></span> <span id="gyro-text">Cảm biến góc: Căn chỉnh phẳng...</span>
+            </div>
+            <div id="cv-pill" class="status-pill status-neutral">
+                <span class="pulse-dot"></span> <span id="cv-text">Vision AI: 4.8.0</span>
+            </div>
+        </div>
+
+        <!-- MAIN VIEWPORT / CAMERA CONTAINER -->
+        <main class="viewport-card">
+            <!-- CAMERA FEED -->
+            <div id="camera-wrapper" class="camera-wrapper">
+                <video id="video-feed" autoplay playsinline muted></video>
+                <canvas id="ar-tryon-canvas" class="ar-tryon-canvas"></canvas>
+                
+                <!-- CARD OVERLAY FRAME WITH DYNAMIC HAND SILHOUETTE -->
+                <div id="card-overlay" class="card-overlay">
+                    <div class="corner tl"></div>
+                    <div class="corner tr"></div>
+                    <div class="corner br"></div>
+                    <div class="corner bl"></div>
+                    
+                    <div class="overlay-guidance" id="overlay-guidance-content">
+                        <div class="hand-silhouette-icon" id="silhouette-icon">
+                            <!-- SVG Silhouette for 4 fingers -->
+                            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v4"/>
+                                <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v7"/>
+                                <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/>
+                                <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
+                            </svg>
+                        </div>
+                        <p class="overlay-title" id="overlay-step-title">ĐẶT 4 NGÓN TAY TRÁI LÊN THẺ</p>
+                        <p class="overlay-desc" id="overlay-step-desc">Ngón Trỏ • Ngón Giữa • Áp Út • Ngón Út</p>
+                    </div>
+
+                    <!-- Precision Spirit Bubble Level -->
+                    <div class="spirit-level">
+                        <div id="level-bubble" class="level-bubble"></div>
+                        <div class="level-crosshair"></div>
+                    </div>
+                </div>
+
+                <!-- LIVE HUD BANNER -->
+                <div id="hud-banner" class="hud-banner">
+                    <span id="hud-icon" class="hud-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                    </span>
+                    <span id="hud-message">Vui lòng giữ điện thoại nằm ngang song song mặt bàn</span>
+                </div>
+
+                <!-- PRIVACY MASK SHIELD -->
+                <div class="privacy-shield-tag">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <span>Auto-Masking: Tự động che số thẻ bảo vệ thông tin</span>
+                </div>
+            </div>
+
+            <!-- LIVE MEASURED 10-FINGER STATUS BAR (HIỂN THỊ TIẾN ĐỘ 10 NGÓN) -->
+            <div class="measured-fingers-bar">
+                <div class="hand-col left-col">
+                    <span class="hand-col-title">✋ TAY TRÁI:</span>
+                    <div class="finger-chips-row">
+                        <span class="f-chip" id="chip-l-thumb">Cái</span>
+                        <span class="f-chip" id="chip-l-index">Trỏ</span>
+                        <span class="f-chip" id="chip-l-middle">Giữa</span>
+                        <span class="f-chip" id="chip-l-ring">Áp út</span>
+                        <span class="f-chip" id="chip-l-pinky">Út</span>
+                    </div>
+                </div>
+                <div class="hand-divider"></div>
+                <div class="hand-col right-col">
+                    <span class="hand-col-title">🤚 TAY PHẢI:</span>
+                    <div class="finger-chips-row">
+                        <span class="f-chip" id="chip-r-thumb">Cái</span>
+                        <span class="f-chip" id="chip-r-index">Trỏ</span>
+                        <span class="f-chip" id="chip-r-middle">Giữa</span>
+                        <span class="f-chip" id="chip-r-ring">Áp út</span>
+                        <span class="f-chip" id="chip-r-pinky">Út</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- CUSTOMIZATION STUDIO CONTROLS (LIGHT THEME) -->
+        <section class="studio-controls">
+            <!-- 1. SHAPE SELECTOR -->
+            <div class="custom-group">
+                <div class="group-header">
+                    <span class="group-label">CHỌN FORM DÁNG MÓNG:</span>
+                    <span class="group-selected-val" id="lbl-shape-selected">Hạnh Nhân (Almond)</span>
+                </div>
+                <div class="chips-scroll" id="shape-chips">
+                    <button class="chip active" data-shape="almond" data-name="Hạnh Nhân (Almond)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8 7 6 12 6 16a6 6 0 0 0 12 0c0-4-2-9-6-14z"/></svg>
+                        <span>Hạnh Nhân</span>
+                    </button>
+                    <button class="chip" data-shape="coffin" data-name="Móng Thang (Coffin)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="7,2 17,2 20,22 4,22"/></svg>
+                        <span>Móng Thang</span>
+                    </button>
+                    <button class="chip" data-shape="stiletto" data-name="Móng Nhọn (Stiletto)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 20,22 4,22"/></svg>
+                        <span>Móng Nhọn</span>
+                    </button>
+                    <button class="chip" data-shape="square" data-name="Vuông Cổ Điển (Square)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect width="18" height="18" x="3" y="3" rx="1"/></svg>
+                        <span>Vuông Cổ Điển</span>
+                    </button>
+                    <button class="chip" data-shape="oval" data-name="Bầu Dục Tự Nhiên (Oval)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><ellipse cx="12" cy="12" rx="7" ry="10"/></svg>
+                        <span>Bầu Dục</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. ART THEME SELECTOR -->
+            <div class="custom-group">
+                <div class="group-header">
+                    <span class="group-label">BỘ SƯU TẬP MÀU SƠN NGHỆ THUẬT:</span>
+                    <span class="group-price-val" id="lbl-theme-price">$100 (Dòng Chủ Lực)</span>
+                </div>
+                <div class="swatches-scroll" id="theme-swatches">
+                    <div class="swatch-card active" data-theme="emerald" data-name="Emerald 3D Velvet" data-price="$100 (Dòng Chủ Lực)">
+                        <div class="swatch-circle grad-emerald"></div>
+                        <span class="swatch-name">Ngọc Lục Bảo 3D</span>
+                    </div>
+                    <div class="swatch-card" data-theme="ruby" data-name="Ruby Haute Couture" data-price="$200 (May Đo Xa Xỉ)">
+                        <div class="swatch-circle grad-ruby"></div>
+                        <span class="swatch-name">Đỏ Ruby Thảm Đỏ</span>
+                    </div>
+                    <div class="swatch-card" data-theme="champagne" data-name="Golden Champagne Luxury" data-price="$200 (Hoàng Gia)">
+                        <div class="swatch-circle grad-champagne"></div>
+                        <span class="swatch-name">Vàng Champagne</span>
+                    </div>
+                    <div class="swatch-card" data-theme="french" data-name="French Minimalist Glow" data-price="$50 (Tiêu Chuẩn)">
+                        <div class="swatch-circle grad-french"></div>
+                        <span class="swatch-name">French Thanh Lịch</span>
+                    </div>
+                    <div class="swatch-card" data-theme="opal" data-name="Opal Mermaid Aura" data-price="$100 (Thiết Kế Riêng)">
+                        <div class="swatch-circle grad-opal"></div>
+                        <span class="swatch-name">Mắt Mèo Xà Cừ</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTION CONTROLS ROW -->
+            <div class="action-row">
+                <button id="switch-cam-btn" class="btn btn-secondary" title="Đổi camera">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+                    <span>Đổi Cam</span>
+                </button>
+
+                <button id="ar-tryon-toggle-btn" class="btn btn-ar-tryon" title="Bật/Tắt chế độ Thử Móng Thực Tế Ảo (AR)">
+                    <span class="ar-sparkle-icon">✨</span>
+                    <span>Thử Móng AR</span>
+                </button>
+
+                <button id="capture-btn" class="btn-shutter" title="Chụp bước hiện tại">
+                    <div class="shutter-inner"></div>
+                </button>
+
+                <button id="demo-mode-btn" class="btn btn-demo" title="Quét thử toàn bộ 10 ngón">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <span>Xem Phiếu 10 Ngón</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- LUXURY JOB TICKET MODAL (LIGHT THEME) -->
+        <div id="ticket-modal" class="ticket-modal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-sheet">
+                <div class="sheet-drag-handle"></div>
+                
+                <div class="ticket-header">
+                    <div class="ticket-brand-badge">
+                        <div class="badge-dot-green"></div>
+                        <span>THUAN VIET EXPORT HUB • QC VERIFIED (10 NGÓN)</span>
+                    </div>
+                    <div class="ticket-header-right">
+                        <a id="sheet-link-btn" href="https://docs.google.com/spreadsheets/d/1HzQp6To-Nym-_payriXnLz97jsw6lJgkReQ0OVJ6y5I/edit?usp=sharing" target="_blank" class="btn-sheet-link" title="Xem Bảng Tính Google Sheet Trực Tuyến">
+                            📊 Mở Google Sheet
+                        </a>
+                        <button id="close-modal-btn" class="btn-close-circle">✕</button>
+                    </div>
+                </div>
+
+                <div class="ticket-main-title">
+                    <h2>PHIẾU MAY ĐO KỸ THUẬT SỐ #VN-2026-S23</h2>
+                    <div class="ticket-sub-row">
+                        <span class="ticket-subtitle">Đầy đủ thông số may đo 10 ngón xuất xưởng nghệ nhân</span>
+                        <span id="sheet-sync-badge" class="sheet-sync-pill">🟢 Đã đồng bộ Google Sheet</span>
+                    </div>
+                </div>
+
+                <!-- DESIGN SUMMARY GRID -->
+                <div class="design-summary-grid">
+                    <div class="summary-cell">
+                        <span class="sum-lbl">FORM DÁNG</span>
+                        <strong class="sum-val" id="ticket-shape-val">Hạnh Nhân (Almond)</strong>
+                    </div>
+                    <div class="summary-cell">
+                        <span class="sum-lbl">BỘ SƯU TẬP</span>
+                        <strong class="sum-val text-primary" id="ticket-theme-val">Emerald 3D Velvet</strong>
+                    </div>
+                    <div class="summary-cell">
+                        <span class="sum-lbl">PHÂN KHÚC</span>
+                        <strong class="sum-val text-warning" id="ticket-price-val">$100 (Dòng Chủ Lực)</strong>
+                    </div>
+                </div>
+
+                <!-- 10 NAIL SIZES BENTO CARDS -->
+                <div class="bento-specs-grid">
+                    <!-- LEFT HAND -->
+                    <div class="bento-hand-card">
+                        <div class="hand-card-header left-header">
+                            <span class="hand-card-title">✋ BÀN TAY TRÁI (LEFT)</span>
+                            <span class="hand-card-hash" id="left-hash">Hash: L-15458</span>
+                        </div>
+                        <div class="fingers-list">
+                            <div class="finger-row">
+                                <span class="finger-name">Ngón Cái (Thumb)</span>
+                                <span class="finger-mm" id="l-thumb-mm">16.1 mm</span>
+                                <span class="size-pill size-primary" id="l-thumb-size">Size #1</span>
+                            </div>
+                            <div class="finger-row">
+                                <span class="finger-name">Ngón Trỏ (Index)</span>
+                                <span class="finger-mm" id="l-index-mm">12.2 mm</span>
+                                <span class="size-pill" id="l-index-size">Size #5</span>
+                            </div>
+                            <div class="finger-row">
+                                <span class="finger-name">Ngón Giữa (Middle)</span>
+                                <span class="finger-mm" id="l-middle-mm">13.0 mm</span>
+                                <span class="size-pill" id="l-middle-size">Size #4</span>
+                            </div>
+                            <div class="finger-row">
+                                <span class="finger-name">Áp Út (Ring)</span>
+                                <span class="finger-mm" id="l-ring-mm">12.0 mm</span>
+                                <span class="size-pill" id="l-ring-size">Size #5</span>
+                            </div>
+                            <div class="finger-row">
+                                <span class="finger-name">Ngón Út (Pinky)</span>
+                                <span class="finger-mm" id="l-pinky-mm">9.1 mm</span>
+                                <span class="size-pill" id="l-pinky-size">Size #8</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT HAND -->
+                    <div class="bento-hand-card">
+                        <div class="hand-card-header right-header">
+                            <span class="hand-card-title">🤚 BÀN TAY PHẢI (RIGHT)</span>
+                            <span class="hand-card-hash" id="right-hash">Hash: R-15458</span>
+                        </div>
+                        <div class="fingers-list">
+                            <div class="finger-row">
+                                <span class="finger-name">Ngón Cái (Thumb)</span>
+                                <span class="finger-mm" id="r-thumb-mm">16.0 mm</span>
+                                <span class="size-pill size-primary" id="r-thumb-size">Size #1</span>
+                            </div>
+                            <div class="finger-row">
+                                <span class="finger-name">Ngón Trỏ (Index)</span>
+                                <span class="finger-mm" id="r-index-mm">12.1 mm</span>
+                                <span class="size-pill" id="r-index-size">Size #5</span>
+                            </div>
+                            <div class="finger-row">
+                                <span class="finger-name">Ngón Giữa (Middle)</span>
+                                <span class="finger-mm" id="r-middle-mm">13.0 mm</span>
+                                <span class="size-pill" id="r-middle-size">Size #4</span>
+                            </div>
+                            <div class="finger-row">
+                                <span class="finger-name">Áp Út (Ring)</span>
+                                <span class="finger-mm" id="r-ring-mm">12.0 mm</span>
+                                <span class="size-pill" id="r-ring-size">Size #5</span>
+                            </div>
+                            <div class="finger-row">
+                                <span class="finger-name">Ngón Út (Pinky)</span>
+                                <span class="finger-mm" id="r-pinky-mm">9.0 mm</span>
+                                <span class="size-pill" id="r-pinky-size">Size #8</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DIRECTIVE BOX -->
+                <div class="directive-box">
+                    <div class="directive-header">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                        <span>CHỈ DẪN KỸ THUẬT GIA CÔNG THỦ CÔNG:</span>
+                    </div>
+                    <div class="directive-body">
+                        <div class="directive-line">
+                            <span class="d-lbl">Vòm Cong C-Curve:</span>
+                            <strong class="d-val text-success" id="c-curve-val">Rc = 10.4 mm • Loại 2 (Tiêu Chuẩn)</strong>
+                        </div>
+                        <div class="directive-line">
+                            <span class="d-lbl">Phôi Cần Rút:</span>
+                            <span class="d-val" id="directive-shape-tip">Phôi Gel Dáng Hạnh Nhân (Almond Tip)</span>
+                        </div>
+                        <div class="directive-line">
+                            <span class="d-lbl">Kỹ Thuật Mài Viền:</span>
+                            <span class="d-val text-warning">Mài vát mỏng mép biểu bì 0.2mm góc 30°</span>
+                        </div>
+                        <div class="directive-line">
+                            <span class="d-lbl">Quà Tặng Kèm:</span>
+                            <span class="d-val">1 Serum Dầu Jojoba Rã Keo 10ml + 1 Que Gỗ Cam Vát</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TICKET ACTIONS -->
+                <div class="ticket-actions">
+                    <button id="copy-json-btn" class="btn btn-secondary">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                        <span>Sao Chép JSON</span>
+                    </button>
+                    <button id="print-ticket-btn" class="btn btn-primary">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+                        <span>In Tem Nhiệt Cho Thợ</span>
+                    </button>
+                    <button id="rescan-btn" class="btn btn-ghost">🔄 Quét Lại Từ Bước 1</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AR & MAIN APP SCRIPTS -->
+    <script src="virtual_nail_tryon.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
