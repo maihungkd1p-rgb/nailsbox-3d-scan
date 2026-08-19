@@ -266,6 +266,43 @@
                     </div>
                 </div>
 
+                <!-- CUSTOMER INFO FORM (ManiMe-Style: Show AFTER scanning is done) -->
+                <div class="customer-info-section" id="customer-info-section">
+                    <div class="customer-info-header">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span>THÔNG TIN KHÁCH HÀNG & GIAO HÀNG:</span>
+                    </div>
+                    <div class="customer-form-grid">
+                        <div class="form-field">
+                            <label for="cust-name">Họ và Tên <span class="req">*</span></label>
+                            <input type="text" id="cust-name" placeholder="Ví dụ: Nguyễn Thu Hà / Jessica Miller" autocomplete="name">
+                        </div>
+                        <div class="form-field form-field-half">
+                            <label for="cust-age">Tuổi</label>
+                            <input type="number" id="cust-age" placeholder="26" min="10" max="99" autocomplete="off">
+                        </div>
+                        <div class="form-field">
+                            <label for="cust-phone">Số điện thoại / WhatsApp <span class="req">*</span></label>
+                            <input type="tel" id="cust-phone" placeholder="+84 912 345 678" autocomplete="tel">
+                        </div>
+                        <div class="form-field">
+                            <label for="cust-address">Địa chỉ giao hàng <span class="req">*</span></label>
+                            <textarea id="cust-address" rows="2" placeholder="123 Main St, Los Angeles, CA 90001, USA"></textarea>
+                        </div>
+                        <div class="form-field">
+                            <label for="cust-notes">Ghi chú riêng cho thợ</label>
+                            <input type="text" id="cust-notes" placeholder="VD: Móng cái trái bị dẹp, cần uốn kỹ">
+                        </div>
+                    </div>
+                    <!-- CAPTURED PHOTOS PREVIEW -->
+                    <div class="captured-photos-row" id="captured-photos-row">
+                        <div class="photo-thumb" id="photo-thumb-1"><span class="photo-label">B1</span><span class="photo-status">⏳</span></div>
+                        <div class="photo-thumb" id="photo-thumb-2"><span class="photo-label">B2</span><span class="photo-status">⏳</span></div>
+                        <div class="photo-thumb" id="photo-thumb-3"><span class="photo-label">B3</span><span class="photo-status">⏳</span></div>
+                        <div class="photo-thumb" id="photo-thumb-4"><span class="photo-label">B4</span><span class="photo-status">⏳</span></div>
+                    </div>
+                </div>
+
                 <!-- DESIGN SUMMARY GRID -->
                 <div class="design-summary-grid">
                     <div class="summary-cell">

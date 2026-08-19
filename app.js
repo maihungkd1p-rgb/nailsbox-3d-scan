@@ -43,6 +43,14 @@ let measuredData = {
     cCurve: "9.8"
 };
 
+// Captured Photos Store (Base64 JPEG for each scan step)
+let capturedPhotos = {
+    step1_left4: null,   // 4 ngón trái
+    step2_leftThumb: null, // Ngón cái trái
+    step3_right4: null,  // 4 ngón phải
+    step4_rightThumb: null // Ngón cái phải
+};
+
 // Global App State
 let isCvLoaded = false;
 let currentStream = null;
@@ -350,6 +358,21 @@ async function processCurrentStepCapture() {
     updateHud("AI đang bóc tách móng và tính toán kích thước thực...");
     const frameB64 = captureVideoFrameBase64();
 
+    // Save captured photo for this step
+    if (frameB64) {
+        const stepPhotoKeys = ['step1_left4', 'step2_leftThumb', 'step3_right4', 'step4_rightThumb'];
+        capturedPhotos[stepPhotoKeys[currentStep - 1]] = frameB64;
+        // Update photo thumbnail preview in ticket modal
+        const thumbEl = document.getElementById(`photo-thumb-${currentStep}`);
+        if (thumbEl) {
+            thumbEl.style.backgroundImage = `url(${frameB64})`;
+            thumbEl.style.backgroundSize = 'cover';
+            thumbEl.style.backgroundPosition = 'center';
+            const statusEl = thumbEl.querySelector('.photo-status');
+            if (statusEl) statusEl.innerText = '✅';
+        }
+    }
+
     let apiResult = null;
     if (frameB64) {
         try {
@@ -473,45 +496,89 @@ function fillAll10FingersDemo() {
 }
 
 // GOOGLE SHEET WEBHOOK SYNC CONFIG
-const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzVvxH7smvwUrZzvuro9IdabMAAQ4voqTwTIPHCp-8kgpM3LD1wzLDnk1QHuvd8NZMB/exec";
+const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyfPG2ETfcQyhXLTndTR_How13PASfoBYay_VeLuHgDioTGT-rxBm3iPCSh14cBRaCS/exec";
 
 async function syncOrderToGoogleSheet(orderData) {
     const syncBadge = document.getElementById('sheet-sync-badge');
+
+    // Validate required customer fields before sync
+    const custName = (document.getElementById('cust-name') || {}).value || '';
+    const custPhone = (document.getElementById('cust-phone') || {}).value || '';
+    const custAddress = (document.getElementById('cust-address') || {}).value || '';
+
+    if (!custName.trim() || !custPhone.trim() || !custAddress.trim()) {
+        // Highlight missing fields
+        ['cust-name', 'cust-phone', 'cust-address'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el && !el.value.trim()) {
+                el.style.borderColor = '#E11D48';
+                el.style.boxShadow = '0 0 0 3px rgba(225,29,72,0.2)';
+                setTimeout(() => {
+                    el.style.borderColor = '';
+                    el.style.boxShadow = '';
+                }, 3000);
+            }
+        });
+        if (syncBadge) {
+            syncBadge.innerText = "🔴 Vui lòng điền Họ tên, SĐT, Địa chỉ!";
+            syncBadge.style.color = "#E11D48";
+            syncBadge.style.background = "#FFF1F2";
+        }
+        speakAI("Vui lòng điền đầy đủ Họ tên, Số điện thoại và Địa chỉ giao hàng trước khi gửi.");
+        // Scroll to customer info section
+        const custSection = document.getElementById('customer-info-section');
+        if (custSection) custSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
+
     if (syncBadge) {
-        syncBadge.innerText = "🔄 Đang đồng bộ Google Sheet...";
+        syncBadge.innerText = "🔄 Đang đồng bộ Google Sheet + ảnh...";
         syncBadge.style.color = "#D97706";
         syncBadge.style.background = "#FEF3C7";
     }
 
     try {
+        // Build full payload WITH Base64 photos for Google Drive upload
+        const fullPayload = buildFullPayloadWithPhotos();
+
         await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
             method: 'POST',
-            mode: 'no-cors', // Cần thiết cho Apps Script Redirect
+            mode: 'no-cors', // Required for Apps Script Redirect
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(orderData)
+            body: JSON.stringify(fullPayload)
         });
 
         if (syncBadge) {
-            syncBadge.innerText = "🟢 Đã đồng bộ Google Sheet ✅";
+            syncBadge.innerText = "🟢 Đã đồng bộ Sheet + Ảnh ✅";
             syncBadge.style.color = "#047857";
             syncBadge.style.background = "#ECFDF5";
         }
-        console.log("Đã đồng bộ đơn hàng thành công lên Google Sheet!");
+        console.log("Sync OK: Order + 4 photos + Customer info sent to Google Sheet!");
     } catch (e) {
-        console.warn("Lỗi đồng bộ Google Sheet:", e);
+        console.warn("Sync error:", e);
         if (syncBadge) {
-            syncBadge.innerText = "🟡 Đã lưu nội bộ";
+            syncBadge.innerText = "🟡 Đã lưu nội bộ (offline)";
         }
     }
 }
 
 function buildCurrentOrderPayload() {
+    // Collect customer info from form
+    const customerInfo = {
+        name: (document.getElementById('cust-name') || {}).value || '',
+        age: (document.getElementById('cust-age') || {}).value || '',
+        phone: (document.getElementById('cust-phone') || {}).value || '',
+        address: (document.getElementById('cust-address') || {}).value || '',
+        notes: (document.getElementById('cust-notes') || {}).value || ''
+    };
+
     return {
         orderId: "#VN-" + Math.floor(100000 + Math.random() * 900000),
         timestamp: new Date().toISOString(),
         device: "Web Client",
+        customer: customerInfo,
         design: {
             shape: currentShapeName,
             theme: currentThemeName,
@@ -531,8 +598,26 @@ function buildCurrentOrderPayload() {
             ring: document.getElementById('r-ring-size').innerText + ` (${measuredData.right.ring ? measuredData.right.ring.mm : '12.0'}mm)`,
             pinky: document.getElementById('r-pinky-size').innerText + ` (${measuredData.right.pinky ? measuredData.right.pinky.mm : '9.0'}mm)`
         },
-        cCurve: document.getElementById('c-curve-val').innerText
+        cCurve: document.getElementById('c-curve-val').innerText,
+        photos: {
+            step1_left4: capturedPhotos.step1_left4 ? '(attached)' : null,
+            step2_leftThumb: capturedPhotos.step2_leftThumb ? '(attached)' : null,
+            step3_right4: capturedPhotos.step3_right4 ? '(attached)' : null,
+            step4_rightThumb: capturedPhotos.step4_rightThumb ? '(attached)' : null
+        }
     };
+}
+
+// Build full payload WITH Base64 photos for Google Drive upload
+function buildFullPayloadWithPhotos() {
+    const base = buildCurrentOrderPayload();
+    base.photos = {
+        step1_left4: capturedPhotos.step1_left4 || null,
+        step2_leftThumb: capturedPhotos.step2_leftThumb || null,
+        step3_right4: capturedPhotos.step3_right4 || null,
+        step4_rightThumb: capturedPhotos.step4_rightThumb || null
+    };
+    return base;
 }
 
 function populateFullJobTicket() {
