@@ -10,28 +10,28 @@ const stepConfigs = {
         title: "BƯỚC 1/4: QUÉT 4 NGÓN TAY TRÁI",
         overlayTitle: "ĐẶT 4 NGÓN TAY TRÁI LÊN THẺ",
         overlayDesc: "Ngón Trỏ • Ngón Giữa • Áp Út • Ngón Út",
-        speech: "Bước 1: Mời bạn đặt 4 ngón tay trái nằm phẳng lên thẻ.",
+        speech: "Bước 1: Mời bạn đặt 4 ngón tay trái nằm phẳng lên mép thẻ.",
         iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v4"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v7"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>`
     },
     2: {
         title: "BƯỚC 2/4: QUÉT NGÓN CÁI TAY TRÁI",
-        overlayTitle: "ĐẶT NGÓN CÁI TAY TRÁI LÊN THẺ",
-        overlayDesc: "Đặt riêng ngón cái nằm phẳng sát mép thẻ",
-        speech: "Rất tốt! Bước 2: Hãy đặt riêng ngón cái tay trái lên thẻ.",
+        overlayTitle: "CHỈ ĐẶT 1 NGÓN CÁI TRÁI LÊN THẺ",
+        overlayDesc: "Nhấc 4 ngón ra • Chỉ đặt ngón cái nằm ngang/dọc sát mép thẻ",
+        speech: "Bước 2: Mời bạn nhấc 4 ngón ra, chỉ đặt duy nhất ngón cái tay trái lên mép thẻ.",
         iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`
     },
     3: {
         title: "BƯỚC 3/4: QUÉT 4 NGÓN TAY PHẢI",
         overlayTitle: "ĐẶT 4 NGÓN TAY PHẢI LÊN THẺ",
         overlayDesc: "Ngón Trỏ • Ngón Giữa • Áp Út • Ngón Út",
-        speech: "Bước 3: Mời bạn đổi sang bàn tay phải, đặt 4 ngón tay lên thẻ.",
+        speech: "Bước 3: Mời bạn đổi sang bàn tay phải, đặt 4 ngón tay lên mép thẻ.",
         iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11V6a2 2 0 0 1 2-2v0a2 2 0 0 1 2 2v4"/><path d="M10 10V4a2 2 0 0 1 2-2v0a2 2 0 0 1 2 2v7"/><path d="M14 10.5V6a2 2 0 0 1 2-2v0a2 2 0 0 1 2 2v8"/><path d="M6 8a2 2 0 0 0-4 0v6a8 8 0 0 0 8 8h2c2.8 0 4.5-.86 5.99-2.34l3.6-3.6a2 2 0 0 0-2.83-2.82L17 15"/></svg>`
     },
     4: {
         title: "BƯỚC 4/4: QUÉT NGÓN CÁI TAY PHẢI",
-        overlayTitle: "ĐẶT NGÓN CÁI TAY PHẢI LÊN THẺ",
-        overlayDesc: "Đặt riêng ngón cái phải để hoàn tất đo 10 ngón",
-        speech: "Bước 4: Hãy đặt ngón cái tay phải lên thẻ để hoàn tất đo 10 ngón.",
+        overlayTitle: "CHỈ ĐẶT 1 NGÓN CÁI PHẢI LÊN THẺ",
+        overlayDesc: "Nhấc 4 ngón ra • Chỉ đặt ngón cái phải để hoàn tất 10 ngón",
+        speech: "Bước 4: Mời bạn nhấc 4 ngón ra, chỉ đặt duy nhất ngón cái tay phải lên mép thẻ để hoàn tất.",
         iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 9V5a3 3 0 0 1 3-3l4 9v11H5.72a2 2 0 0 1-2-1.7l-1.38-9a2 2 0 0 1 2-2.3zm7 13h3a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-3"/></svg>`
     }
 };
@@ -486,9 +486,18 @@ function fillAll10FingersDemo() {
         cCurve: "9.9"
     };
 
-    // Đánh dấu xanh tất cả các chip ngón
+    // Đánh dấu xanh tất cả các chip ngón & thumbnails
     document.querySelectorAll('.f-chip').forEach(c => c.classList.add('measured'));
     fingersMeasuredTag.innerText = "Đã đo: 10/10 ngón ✅";
+
+    // Cập nhật thumbnail ảnh demo
+    for (let i = 1; i <= 4; i++) {
+        const thumbEl = document.getElementById(`photo-thumb-${i}`);
+        if (thumbEl) {
+            const statusEl = thumbEl.querySelector('.photo-status');
+            if (statusEl) statusEl.innerText = '✅';
+        }
+    }
 
     populateFullJobTicket();
     ticketModal.classList.add('open');
@@ -500,6 +509,10 @@ const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyfPG2
 
 async function syncOrderToGoogleSheet(orderData) {
     const syncBadge = document.getElementById('sheet-sync-badge');
+    const uploadBtns = [
+        document.getElementById('upload-order-btn'),
+        document.getElementById('submit-order-bottom-btn')
+    ].filter(b => b);
 
     // Validate required customer fields before sync
     const custName = (document.getElementById('cust-name') || {}).value || '';
@@ -524,26 +537,30 @@ async function syncOrderToGoogleSheet(orderData) {
             syncBadge.style.color = "#E11D48";
             syncBadge.style.background = "#FFF1F2";
         }
-        speakAI("Vui lòng điền đầy đủ Họ tên, Số điện thoại và Địa chỉ giao hàng trước khi gửi.");
-        // Scroll to customer info section
+        speakAI("Vui lòng điền đầy đủ Họ tên, Số điện thoại và Địa chỉ giao hàng.");
         const custSection = document.getElementById('customer-info-section');
         if (custSection) custSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
     }
 
+    // Set loading state on buttons & badge
+    uploadBtns.forEach(btn => {
+        btn.classList.add('loading');
+        btn.innerHTML = `<span>⏳ Đang tải 4 ảnh & dữ liệu lên Google Drive...</span>`;
+    });
+
     if (syncBadge) {
-        syncBadge.innerText = "🔄 Đang đồng bộ Google Sheet + ảnh...";
+        syncBadge.innerText = "🔄 Đang lưu ảnh vào Drive & Sheet...";
         syncBadge.style.color = "#D97706";
         syncBadge.style.background = "#FEF3C7";
     }
 
     try {
-        // Build full payload WITH Base64 photos for Google Drive upload
         const fullPayload = buildFullPayloadWithPhotos();
 
         await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
             method: 'POST',
-            mode: 'no-cors', // Required for Apps Script Redirect
+            mode: 'no-cors',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -551,16 +568,64 @@ async function syncOrderToGoogleSheet(orderData) {
         });
 
         if (syncBadge) {
-            syncBadge.innerText = "🟢 Đã đồng bộ Sheet + Ảnh ✅";
+            syncBadge.innerText = "🟢 Đã lưu vào Drive & Sheet thành công ✅";
             syncBadge.style.color = "#047857";
             syncBadge.style.background = "#ECFDF5";
         }
-        console.log("Sync OK: Order + 4 photos + Customer info sent to Google Sheet!");
+
+        uploadBtns.forEach(btn => {
+            btn.classList.remove('loading');
+            btn.classList.add('success');
+            btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>ĐÃ TẢI LÊN DRIVE & SHEET THÀNH CÔNG!</span>`;
+        });
+
+        vibratePhone(50);
+        speakAI("Tuyệt vời! Đơn may đo 10 ngón của bạn đã được gửi thành công về xưởng.");
+
+        // Điền thông tin vào Success Modal
+        const orderId = "#VN-" + Math.floor(100000 + Math.random() * 900000);
+        const successModal = document.getElementById('success-modal');
+        if (successModal) {
+            document.getElementById('success-order-id').innerText = orderId;
+            document.getElementById('success-cust-name').innerText = custName;
+            document.getElementById('success-design-info').innerText = `${currentThemeName} • ${currentShapeName} (${currentPriceTier})`;
+            
+            const lSizes = `${measuredData.left.thumb ? measuredData.left.thumb.size : '#1'} - ${measuredData.left.index ? measuredData.left.index.size : '#5'} - ${measuredData.left.middle ? measuredData.left.middle.size : '#4'} - ${measuredData.left.ring ? measuredData.left.ring.size : '#5'} - ${measuredData.left.pinky ? measuredData.left.pinky.size : '#8'}`;
+            const rSizes = `${measuredData.right.thumb ? measuredData.right.thumb.size : '#1'} - ${measuredData.right.index ? measuredData.right.index.size : '#5'} - ${measuredData.right.middle ? measuredData.right.middle.size : '#4'} - ${measuredData.right.ring ? measuredData.right.ring.size : '#5'} - ${measuredData.right.pinky ? measuredData.right.pinky.size : '#8'}`;
+            
+            document.getElementById('success-left-sizes').innerText = lSizes;
+            document.getElementById('success-right-sizes').innerText = rSizes;
+
+            // Setup WhatsApp share button
+            const shareBtn = document.getElementById('share-whatsapp-btn');
+            if (shareBtn) {
+                shareBtn.onclick = () => {
+                    const msg = encodeURIComponent(`💅 [THUẦN VIỆT NAILS BOX] Xác nhận đơn may đo ${orderId}\n👤 Khách hàng: ${custName}\n📱 SĐT: ${custPhone}\n📍 Địa chỉ: ${custAddress}\n🎨 Dáng & Mẫu: ${currentShapeName} - ${currentThemeName}\n✋ Tay Trái: ${lSizes}\n🤚 Tay Phải: ${rSizes}\n\nĐã gửi dữ liệu may đo 3D từ Web Studio!`);
+                    window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
+                };
+            }
+
+            // Close success modal button
+            const closeSuccessBtn = document.getElementById('close-success-btn');
+            if (closeSuccessBtn) {
+                closeSuccessBtn.onclick = () => {
+                    successModal.classList.remove('open');
+                    ticketModal.classList.remove('open');
+                };
+            }
+
+            successModal.classList.add('open');
+        }
+
     } catch (e) {
         console.warn("Sync error:", e);
         if (syncBadge) {
             syncBadge.innerText = "🟡 Đã lưu nội bộ (offline)";
         }
+        uploadBtns.forEach(btn => {
+            btn.classList.remove('loading');
+            btn.innerHTML = `<span>Thử Gửi Lại Dữ Liệu</span>`;
+        });
     }
 }
 
@@ -653,9 +718,13 @@ function populateFullJobTicket() {
     // C-Curve
     document.getElementById('c-curve-val').innerText = `Rc = ${measuredData.cCurve} mm • Loại 2 (Tiêu Chuẩn)`;
 
-    // Tự động đẩy đơn hàng lên Google Sheet
-    const orderPayload = buildCurrentOrderPayload();
-    syncOrderToGoogleSheet(orderPayload);
+    // Trạng thái chờ người dùng điền thông tin
+    const syncBadge = document.getElementById('sheet-sync-badge');
+    if (syncBadge) {
+        syncBadge.innerText = "📝 Vui lòng điền thông tin & bấm Hoàn Thành";
+        syncBadge.style.color = "#0284C7";
+        syncBadge.style.background = "#E0F2FE";
+    }
 }
 
 // 7. TÙY BIẾN DÁNG MÓNG & BẢNG MÀU
@@ -688,7 +757,23 @@ themeSwatches.forEach(swatch => {
     });
 });
 
-// 8. CÁC NÚT ĐIỀU KHIỂN KHÁC
+// 8. CÁC NÚT ĐIỀU KHIỂN & GỬI DỮ LIỆU
+const uploadOrderBtn = document.getElementById('upload-order-btn');
+if (uploadOrderBtn) {
+    uploadOrderBtn.addEventListener('click', () => {
+        vibratePhone(35);
+        syncOrderToGoogleSheet();
+    });
+}
+
+const submitOrderBottomBtn = document.getElementById('submit-order-bottom-btn');
+if (submitOrderBottomBtn) {
+    submitOrderBottomBtn.addEventListener('click', () => {
+        vibratePhone(35);
+        syncOrderToGoogleSheet();
+    });
+}
+
 switchCamBtn.addEventListener('click', () => {
     currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
     startCamera();
@@ -712,8 +797,6 @@ copyJsonBtn.addEventListener('click', () => {
 });
 
 printTicketBtn.addEventListener('click', () => {
-    const orderPayload = buildCurrentOrderPayload();
-    syncOrderToGoogleSheet(orderPayload);
     window.print();
 });
 

@@ -1127,3 +1127,197 @@ body.light-theme {
     font-size: 13px;
     z-index: 1;
 }
+
+/* SUBMIT ORDER BUTTON (High Priority Action) */
+.btn-submit-order {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 14px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+    color: #FFFFFF;
+    border: 2px solid #047857;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+    transition: all 0.2s ease;
+}
+
+.btn-submit-order:hover {
+    background: linear-gradient(135deg, #047857 0%, #059669 100%);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+    transform: translateY(-2px);
+}
+
+.btn-submit-order:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.btn-submit-order.loading {
+    background: #64748B;
+    border-color: #475569;
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+.btn-submit-order.success {
+    background: linear-gradient(135deg, #047857 0%, #059669 100%);
+}
+
+.finish-cta-container {
+    margin-top: 8px;
+    margin-bottom: 6px;
+}
+
+.btn-pulse-action {
+    animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+    0%, 100% {
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+    }
+    50% {
+        box-shadow: 0 4px 24px rgba(16, 185, 129, 0.7), 0 0 0 4px rgba(16, 185, 129, 0.25);
+    }
+}
+
+/* ==========================================================================
+   SUCCESS MODAL (LUXURY RECEIPT POPUP)
+   ========================================================================== */
+.success-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    display: none;
+    z-index: 120;
+}
+.success-modal.open { display: flex; align-items: center; justify-content: center; }
+
+.success-backdrop {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+}
+
+.success-card {
+    position: relative;
+    width: 90%;
+    max-width: 420px;
+    background: #FFFFFF;
+    border-radius: var(--radius-xl);
+    border: 2px solid var(--border-subtle);
+    padding: 24px 20px 20px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 2;
+}
+
+@keyframes popIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.success-icon-badge {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: #ECFDF5;
+    border: 3px solid #A7F3D0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+.success-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-pure);
+    margin-bottom: 6px;
+}
+
+.success-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+.order-receipt-box {
+    background: #F8FAFC;
+    border: 1.5px dashed var(--border-highlight);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    text-align: left;
+    margin-bottom: 16px;
+}
+
+.receipt-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 11px;
+}
+
+.r-lbl { font-size: 10px; font-weight: 700; color: var(--text-muted); }
+.r-val { font-size: 11px; font-weight: 800; color: var(--text-pure); }
+
+.receipt-divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 8px 0;
+}
+
+.receipt-sizes-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 6px 8px;
+}
+
+.sizes-col { display: flex; flex-direction: column; gap: 2px; }
+.sc-title { font-size: 8.5px; font-weight: 800; color: var(--color-primary); }
+.sc-val { font-size: 9.5px; font-weight: 700; font-family: var(--font-mono); color: var(--text-pure); }
+
+.success-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.btn-whatsapp {
+    background: linear-gradient(135deg, #128C7E 0%, #25D366 100%);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    padding: 11px 16px;
+    font-size: 12.5px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35);
+    transition: all 0.2s;
+}
+
+.btn-whatsapp:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.45);
+}
+
